@@ -5,10 +5,13 @@ VFyne is a powerful visual testing framework designed specifically for [Fyne](ht
 ## 🌟 Key Features
 
 - **📸 Automated Screenshot Capture** - Capture pixel-perfect screenshots of any Fyne UI component
+- **🧪 Go Test Integration** - Works seamlessly with `go test` command
+- **📷 Snapshot Testing** - Compare UI against baseline images with automatic diff generation
+- **🔄 Consistent Naming** - Screenshots always use the same name and overwrite previous runs
 - **🎨 Theme Support** - Test your UI across different themes (light, dark, custom)
 - **📐 Flexible Sizing** - Test responsive layouts with custom window sizes
 - **🏷️ Test Organization** - Tag and filter tests for better organization
-- **📊 Beautiful Reports** - Generate interactive HTML reports with visual test results
+- **📊 Beautiful Reports** - Generate interactive HTML reports with visual test results (CLI mode)
 - **🚀 Simple API** - Intuitive builder pattern for creating tests
 - **⚡ Fast Execution** - Efficient test runner with optional parallel execution
 - **🤖 AI-Friendly** - Structured output perfect for AI analysis and automation
@@ -21,7 +24,41 @@ go get github.com/jairo/vfyne
 
 ## 🚀 Quick Start
 
-### Basic Example
+### Go Test Integration (Recommended)
+
+VFyne now integrates seamlessly with Go's testing framework:
+
+```go
+package myapp_test
+
+import (
+    "testing"
+    
+    "fyne.io/fyne/v2/widget"
+    vfyne "github.com/jairo/vfyne/testing"
+)
+
+func TestMyWidget(t *testing.T) {
+    // Simple screenshot (always overwrites)
+    vfyne.AssertScreenshot(t, "my_widget", widget.NewLabel("Hello, World!"))
+    
+    // Snapshot testing (compares with baseline)
+    vfyne.AssertSnapshot(t, "my_snapshot", widget.NewButton("Click me", func() {}))
+}
+```
+
+Run tests:
+```bash
+# Run tests and capture screenshots
+go test -v
+
+# Update snapshots
+go test -v -update-snapshots
+```
+
+### Standalone CLI Mode
+
+For standalone visual test suites:
 
 ```go
 package main
@@ -83,6 +120,79 @@ go run main.go -no-report
 
 ## 📚 Advanced Usage
 
+### Go Test Integration Features
+
+#### Screenshot Testing
+Screenshots are saved with consistent names and always overwrite previous runs:
+
+```go
+func TestScreenshots(t *testing.T) {
+    vt := vfyne.New(t)
+    
+    // Basic screenshot
+    vt.Screenshot("login_form", createLoginForm())
+    
+    // With custom size
+    vt.Screenshot("dashboard", createDashboard(), vfyne.WithSize(1200, 800))
+    
+    // Mobile responsive
+    vt.Screenshot("mobile_view", createMobileUI(), vfyne.WithMobileSize())
+}
+```
+
+#### Snapshot Testing
+Compare UI against baseline images:
+
+```go
+func TestSnapshots(t *testing.T) {
+    vt := vfyne.New(t)
+    
+    // Will fail if image differs from snapshot
+    vt.Snapshot("user_profile", createUserProfile())
+    
+    // Update snapshots with: go test -update-snapshots
+}
+```
+
+When snapshots don't match:
+- Test fails with detailed error
+- Diff image is generated showing differences
+- Actual output is saved for comparison
+
+#### Theme Testing
+```go
+func TestThemes(t *testing.T) {
+    content := createThemedContent()
+    
+    t.Run("Light", func(t *testing.T) {
+        vt := vfyne.New(t)
+        vt.SetTheme(theme.LightTheme())
+        vt.Screenshot("theme_light", content)
+    })
+    
+    t.Run("Dark", func(t *testing.T) {
+        vt := vfyne.New(t)
+        vt.SetTheme(theme.DarkTheme()) 
+        vt.Screenshot("theme_dark", content)
+    })
+}
+```
+
+#### File Organization
+```
+myapp/
+├── widget_test.go
+└── testdata/
+    ├── screenshots/      # Current test outputs (overwritten each run)
+    │   ├── login_form.png
+    │   ├── dashboard.png
+    │   ├── actual_*.png  # Failed snapshot attempts
+    │   └── diff_*.png    # Visual diffs
+    └── snapshots/        # Baseline images for comparison
+        ├── user_profile.png
+        └── checkout_flow.png
+```
+
 ### Custom Test Suite Configuration
 
 ```go
@@ -140,49 +250,6 @@ suite.AddBuilder(
         }).
         WithTags("forms", "validation", "error-states"),
 )
-```
-
-## 🎯 Best Practices
-
-### 1. Descriptive Test Names
-Use clear, descriptive names that explain what the test captures:
-```go
-// Good
-"user_profile_edit_form"
-"dashboard_mobile_layout"
-"error_message_invalid_email"
-
-// Avoid
-"test1"
-"form"
-"error"
-```
-
-### 2. Use Tags for Organization
-```go
-WithTags("forms", "validation", "user-input")
-WithTags("navigation", "mobile")
-WithTags("error-states", "edge-cases")
-```
-
-### 3. Test Different States
-```go
-// Test empty states
-suite.Add(createTest("empty_list", createEmptyListView()))
-
-// Test loading states
-suite.Add(createTest("loading_spinner", createLoadingView()))
-
-// Test error states
-suite.Add(createTest("network_error", createErrorView()))
-
-// Test success states
-suite.Add(createTest("success_message", createSuccessView()))
-```
-
-### 4. Document Complex Tests
-```go
-WithDescription("Registration form with all fields filled, showing password strength indicator and terms acceptance checkbox checked")
 ```
 
 ## 📊 Output Structure
