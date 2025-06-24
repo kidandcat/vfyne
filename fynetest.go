@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
+	fynetest "fyne.io/fyne/v2/test"
 	"fyne.io/fyne/v2/theme"
 )
 
@@ -160,7 +160,7 @@ func (r *Runner) ensureApp() fyne.App {
 	defer r.mu.Unlock()
 	
 	if r.app == nil {
-		r.app = app.New()
+		r.app = fynetest.NewApp()
 	}
 	return r.app
 }

@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/test"
 	"fyne.io/fyne/v2/theme"
 )
 
@@ -37,7 +37,7 @@ func New(t *testing.T) *VFyneTest {
 	
 	return &VFyneTest{
 		t:             t,
-		app:           app.New(),
+		app:           test.NewApp(),
 		snapshotDir:   filepath.Join(testDir, "snapshots"),
 		screenshotDir: filepath.Join(testDir, "screenshots"),
 		renderWait:    100 * time.Millisecond,
@@ -63,14 +63,15 @@ func (v *VFyneTest) Screenshot(name string, content fyne.CanvasObject, opts ...S
 		opt(options)
 	}
 	
-	v.window = v.app.NewWindow(name)
-	v.window.SetContent(content)
+	v.window = test.NewWindow(content)
 	v.window.Resize(options.size)
-	v.window.CenterOnScreen()
 	
+	// Wait for rendering
 	time.Sleep(v.renderWait)
 	
-	img := v.window.Canvas().Capture()
+	// Capture the canvas
+	canvas := v.window.Canvas()
+	img := canvas.Capture()
 	
 	filename := sanitizeFilename(name) + ".png"
 	path := filepath.Join(v.screenshotDir, filename)
@@ -99,14 +100,15 @@ func (v *VFyneTest) Snapshot(name string, content fyne.CanvasObject, opts ...Scr
 		opt(options)
 	}
 	
-	v.window = v.app.NewWindow(name)
-	v.window.SetContent(content)
+	v.window = test.NewWindow(content)
 	v.window.Resize(options.size)
-	v.window.CenterOnScreen()
 	
+	// Wait for rendering
 	time.Sleep(v.renderWait)
 	
-	img := v.window.Canvas().Capture()
+	// Capture the canvas
+	canvas := v.window.Canvas()
+	img := canvas.Capture()
 	
 	filename := sanitizeFilename(name) + ".png"
 	snapshotPath := filepath.Join(v.snapshotDir, filename)

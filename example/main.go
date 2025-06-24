@@ -3,7 +3,6 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/data/validation"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
@@ -96,7 +95,6 @@ func main() {
 					
 					emailEntry := widget.NewEntry()
 					emailEntry.SetPlaceHolder("email@example.com")
-					emailEntry.Validator = validation.NewEmail()
 					
 					passwordEntry := widget.NewPasswordEntry()
 					passwordEntry.SetPlaceHolder("Password")
@@ -127,20 +125,15 @@ func main() {
 				WithSetup(func() fyne.CanvasObject {
 					emailEntry := widget.NewEntry()
 					emailEntry.SetText("invalid-email")
-					emailEntry.Validator = validation.NewEmail()
 					
 					passwordEntry := widget.NewPasswordEntry()
 					passwordEntry.SetText("123") // Too short
-					passwordEntry.Validator = validation.NewLength(8, 100)
 					
 					form := widget.NewForm(
 						widget.NewFormItem("Email", emailEntry),
 						widget.NewFormItem("Password", passwordEntry),
 					)
 					
-					// Trigger validation to show errors
-					emailEntry.Validate()
-					passwordEntry.Validate()
 					
 					return form
 				}).
@@ -179,8 +172,8 @@ func main() {
 					
 					infinite := widget.NewProgressBarInfinite()
 					
-					activity := widget.NewActivity()
-					activity.Start()
+					// Activity indicator placeholder
+					activity := widget.NewProgressBarInfinite()
 					
 					return container.NewVBox(
 						widget.NewLabel("Download Progress (65%):"),
@@ -307,7 +300,7 @@ func main() {
 				WithSize(375, 667). // iPhone SE size
 				WithSetup(func() fyne.CanvasObject {
 					header := widget.NewToolbar(
-						widget.NewToolbarAction(theme.NavigationMenuIcon(), func() {}),
+						widget.NewToolbarAction(theme.MenuIcon(), func() {}),
 						widget.NewToolbarSpacer(),
 						widget.NewToolbarAction(theme.MoreVerticalIcon(), func() {}),
 					)
