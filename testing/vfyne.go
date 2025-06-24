@@ -2,7 +2,6 @@ package testing
 
 import (
 	"flag"
-	"fmt"
 	"image"
 	"image/png"
 	"os"
@@ -14,8 +13,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/test"
 	"fyne.io/fyne/v2/theme"
 )
 
@@ -73,7 +70,7 @@ func (v *VFyneTest) Screenshot(name string, content fyne.CanvasObject, opts ...S
 	
 	time.Sleep(v.renderWait)
 	
-	img := canvas.Capture(v.window.Canvas())
+	img := v.window.Canvas().Capture()
 	
 	filename := sanitizeFilename(name) + ".png"
 	path := filepath.Join(v.screenshotDir, filename)
@@ -109,7 +106,7 @@ func (v *VFyneTest) Snapshot(name string, content fyne.CanvasObject, opts ...Scr
 	
 	time.Sleep(v.renderWait)
 	
-	img := canvas.Capture(v.window.Canvas())
+	img := v.window.Canvas().Capture()
 	
 	filename := sanitizeFilename(name) + ".png"
 	snapshotPath := filepath.Join(v.snapshotDir, filename)
